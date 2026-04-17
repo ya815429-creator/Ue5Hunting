@@ -1,8 +1,36 @@
-# 1. 忽略所有文件和文件夹
-*
+# ==========================================
+# 第一部分：全局忽略与基础设置
+# ==========================================
+# 1. 忽略根目录下的所有内容
+/*
 
-# 2. 不忽略 .gitignore 文件本身（强烈建议保留，否则 Git 无法追踪这个规则文件）
+# 2. 保留 .gitignore 文件本身
 !.gitignore
 
-# 3. 不忽略 source 文件夹及其内部的所有内容
-!source/
+# ==========================================
+# 第二部分：逐层解禁并精确定位你要保留的文件
+# ==========================================
+# 3. 开放 Source 目录，但立刻忽略里面的所有内容
+!Source/
+Source/*
+
+# 4. 精准保留 Source 下的两个 Target.cs 文件
+!Source/UE4HuntingEditor.Target.cs
+!Source/UE4Hunting.Target.cs
+
+# 5. 开放 Source/UE4Hunting 目录，并忽略里面的内容
+!Source/UE4Hunting/
+Source/UE4Hunting/*
+
+# 6. 精准保留 UE4Hunting.Build.cs 文件
+!Source/UE4Hunting/UE4Hunting.Build.cs
+
+# 7. 开放 Public 和 Private 目录，并忽略里面的其他内容
+!Source/UE4Hunting/Public/
+!Source/UE4Hunting/Private/
+Source/UE4Hunting/Public/*
+Source/UE4Hunting/Private/*
+
+# 8. 最终保留 VRGun 文件夹及其内部的所有代码文件！
+!Source/UE4Hunting/Public/VRGun/
+!Source/UE4Hunting/Private/VRGun/
