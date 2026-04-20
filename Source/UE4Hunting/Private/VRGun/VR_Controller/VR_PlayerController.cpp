@@ -41,7 +41,7 @@ void AVR_PlayerController::Client_ShowLoadingScreen_Implementation(float Duratio
 {
     if (PlayerCameraManager)
     {
-        PlayerCameraManager->StartCameraFade(0.0f, 1.0f, Duration, FLinearColor::Black, true, true);
+        PlayerCameraManager->StartCameraFade(0.0f, 1.0f, Duration, FLinearColor::Black, false, true);
     }
     // 立刻给武器上保险
     if (APawn* MyPawn = GetPawn())

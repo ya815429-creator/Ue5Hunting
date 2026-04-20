@@ -95,10 +95,13 @@ protected:
     void Explode();
 
 public:
+    /** 缓存从武器传过来的击中音效 */
+    UPROPERTY()
+    class USoundBase* ImpactSound;
     /**
      * 接收来自武器发射源的完整参数注入
      * 必须在 SpawnActorDeferred 与 FinishSpawningActor 之间被调用。
      */
-    void InitFromWeapon(double InSpeed, double InGravity, double InLifeSpan, const FProjectileVFXs& InHitVFXs, FVector InTargetLoc, FVector InHitNormal, EVRHitType InHitType);
+    void InitFromWeapon(double InSpeed, double InGravity, double InLifeSpan, const FProjectileVFXs& InHitVFXs, FVector InTargetLoc, FVector InHitNormal, EVRHitType InHitType, USoundBase* InImpactSound = nullptr);
 #pragma endregion
 };

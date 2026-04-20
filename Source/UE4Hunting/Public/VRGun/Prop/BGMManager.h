@@ -50,14 +50,13 @@ protected:
 
 public:
 	//双通道淡入淡出系统
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly, Category = "VR|BGM")
+	UPROPERTY(VisibleAnywhere, Category = "VR|BGM")
 	UAudioComponent* AudioChannelA;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "VR|BGM")
+	UPROPERTY(VisibleAnywhere, Category = "VR|BGM")
 	UAudioComponent* AudioChannelB;
 
 	bool bIsChannelAPlaying = true;
-
 	//默认的淡入淡出时间
 	const float CrossfadeDuration = 2.0f;
 };

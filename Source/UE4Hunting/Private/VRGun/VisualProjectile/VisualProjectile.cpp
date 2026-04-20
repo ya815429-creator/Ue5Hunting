@@ -4,7 +4,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "Kismet/GameplayStatics.h"
 #pragma region /* 生命周期与初始化 */
 
 /**
@@ -75,7 +75,7 @@ void AVisualProjectile::BeginPlay()
 /**
  * 接收来自武器组件发射前注入的环境与目标参数
  */
-void AVisualProjectile::InitFromWeapon(double InSpeed, double InGravity, double InLifeSpan, const FProjectileVFXs& InHitVFXs, FVector InTargetLoc, FVector InHitNormal, EVRHitType InHitType)
+void AVisualProjectile::InitFromWeapon(double InSpeed, double InGravity, double InLifeSpan, const FProjectileVFXs& InHitVFXs, FVector InTargetLoc, FVector InHitNormal, EVRHitType InHitType, USoundBase* InImpactSound)
 {
     Projectile_Speed = InSpeed;
     Projectile_Gravity_Scale = InGravity;
@@ -85,6 +85,7 @@ void AVisualProjectile::InitFromWeapon(double InSpeed, double InGravity, double 
     ExactTargetLocation = InTargetLoc;
     ExactHitNormal = InHitNormal;
     HitMaterialType = InHitType;
+    ImpactSound = InImpactSound;
 }
 
 /**
@@ -120,7 +121,27 @@ void AVisualProjectile::Explode()
             FVector(1.0f), true, true, ENCPoolMethod::None, true
         );
     }
+    if (ImpactSound)
+    {
+        // 判断这颗子弹的主人是不是本地玩家
+        bool bIsLocal = false;
+        if (APawn* OwnerPawn = Cast<APawn>(GetOwner()))
+        {
+            bIsLocal = OwnerPawn->IsLocallyControlled();
+        }
 
+        if (bIsLocal)
+        {
+            // 【1P 本地击中】：自己打中的，给你最清晰的 2D 贴耳正反馈！音量 1.0
+            UGameplayStatics::PlaySound2D(this, ImpactSound, 1.0f);
+        }
+        else
+        {
+            // 【3P 远端击中】：队友打中的，或者导播在看全景。
+            // 同样用 2D 音效无视距离，但强行把音量压低到 0.2，只作为微弱的战场环境音，绝不喧宾夺主！
+            UGameplayStatics::PlaySound2D(this, ImpactSound, 0.2f);
+        }
+    }
     Destroy();
 }
 

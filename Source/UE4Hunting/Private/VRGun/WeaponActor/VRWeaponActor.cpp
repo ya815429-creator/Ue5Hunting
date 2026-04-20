@@ -154,8 +154,33 @@ void AVRWeaponActor::HandleEquipProgress(float Value)
  */
 void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const TArray<FVector>& TargetNormals, const TArray<EVRHitType>& HitTypes, bool bIsLocalFire, EVRWeaponType WeaponType)
 {
+
     // ==========================================
-     // 1. 激活枪口动态光源 (同步双端)
+    // 播放开火音效 (双轨防吵闹处理)
+    // ==========================================
+    if (FireSound)
+    {
+        if (bIsLocalFire)
+        {
+            // 【1P 本地轨】：贴耳播放，满音量 (1.0f)，提供最爽快的沉浸打击感！
+            if (WeaponMesh_1P)
+            {
+                UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh_1P, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true, 1.0f);
+            }
+        }
+        else
+        {
+            // 【3P 远端轨】：导播或围观视角。
+            // 魔法降噪：将音量强行压低至 0.3 倍，并且挂载在 3P 枪口上，带有 3D 空间感衰减。
+            if (WeaponMesh_3P)
+            {
+                UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh_3P, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::KeepRelativeOffset, true, 0.3f);
+            }
+        }
+    }
+
+    // ==========================================
+     //激活枪口动态光源 (同步双端)
      // ==========================================
     if (LightCurve)
     {
@@ -165,7 +190,7 @@ void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const T
     }
 
     // ==========================================
-    // 2. 生成枪口火花 Niagara 粒子
+    // 生成枪口火花 Niagara 粒子
     // ==========================================
     if (Projectile_Particle_MuzzleFlash)
     {
@@ -195,7 +220,7 @@ void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const T
     }
 
     // ==========================================
-    // 3. 连锁闪电枪 (ChainGun) 专属视觉表现
+    // 连锁闪电枪 (ChainGun) 专属视觉表现
     // ==========================================
     if (WeaponType == EVRWeaponType::ChainGun && ChainLightningVFX && TargetLocations.Num() > 0)
     {
@@ -240,7 +265,7 @@ void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const T
     }
 
     // ==========================================
-    // 4. 生成实体弹道 (VisualProjectile) 
+    // 生成实体弹道 (VisualProjectile) 
     // ==========================================
     if (Projectile_Class)
     {
@@ -263,6 +288,13 @@ void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const T
                     FRotator LookAtRot = UKismetMathLibrary::FindLookAtRotation(SpawnLoc, TargetLoc);
                     FTransform SpawnTransform(LookAtRot, SpawnLoc, FVector(1.0f));
 
+                    // 🌟 查字典：安全获取当前击中材质对应的音效
+                    USoundBase* SoundToPlay = nullptr;
+                    if (USoundBase** FoundSound = HitSoundMap.Find(HitType))
+                    {
+                        SoundToPlay = *FoundSound; // 找到了才赋值，找不到就是 nullptr 绝对安全
+                    }
+
                     AVisualProjectile* VisProj = GetWorld()->SpawnActorDeferred<AVisualProjectile>(Projectile_Class, SpawnTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 
                     if (VisProj)
@@ -271,7 +303,7 @@ void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const T
                         // 只有明确了“子弹的主人是谁”，后面的权限屏蔽才能生效！
                         VisProj->SetOwner(this->GetOwner());
 
-                        VisProj->InitFromWeapon(Projectile_Speed, Projectile_Gravity_Scale, Projectile_LifeSpan, Projectile_HitVFXs, TargetLoc, HitNormal, HitType);
+                        VisProj->InitFromWeapon(Projectile_Speed, Projectile_Gravity_Scale, Projectile_LifeSpan, Projectile_HitVFXs, TargetLoc, HitNormal, HitType, SoundToPlay);
 
                         // 水平射线枪隐形弹处理
                         if (WeaponType == EVRWeaponType::HorizontalLine && i != CenterIndex)

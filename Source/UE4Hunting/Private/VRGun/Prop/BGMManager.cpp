@@ -5,6 +5,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundBase.h"
+#include "Kismet/GameplayStatics.h"
 // Sets default values
 ABGMManager::ABGMManager()
 {
@@ -86,12 +87,12 @@ void ABGMManager::OnRep_CurrentBGMTag()
     // 旧音乐淡出
     if (ActiveChannel->IsPlaying())
     {
-        ActiveChannel->FadeOut(CrossfadeDuration, 0.0f, EAudioFaderCurve::Linear);
+        ActiveChannel->FadeOut(CrossfadeDuration, 0.0f);
     }
 
     // 新音乐淡入
     InactiveChannel->SetSound(NewBGM);
-    InactiveChannel->FadeIn(CrossfadeDuration, 1.0f,0.0f, EAudioFaderCurve::Linear);
+    InactiveChannel->FadeIn(CrossfadeDuration, 1.0f);
 
     // 交换身份
     bIsChannelAPlaying = !bIsChannelAPlaying;

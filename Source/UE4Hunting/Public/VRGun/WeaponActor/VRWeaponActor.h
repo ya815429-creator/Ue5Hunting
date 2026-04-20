@@ -147,4 +147,17 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Weapon|Action")
     virtual void FireVisuals(const TArray<FVector>& TargetLocations, const TArray<FVector>& TargetNormals, const TArray<EVRHitType>& HitTypes, bool bIsLocalFire, EVRWeaponType WeaponType = EVRWeaponType::Normal);
 #pragma endregion
+
+#pragma region /* 音效配置 */
+public:
+    /** 武器开火音效 */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Audio")
+    class USoundBase* FireSound;
+
+    /** * 击中物理材质音效映射表 (字典)
+     * 允许留空！如果某种材质没配声音，底层会自动安全跳过。
+     */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon|Audio")
+    TMap<EVRHitType, class USoundBase*> HitSoundMap;
+#pragma endregion
 };
