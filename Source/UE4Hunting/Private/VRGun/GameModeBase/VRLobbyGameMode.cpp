@@ -12,6 +12,7 @@
 #include "VRGun/Component/VRWeaponComponent.h"
 #include "VRGun/GameInstance/VR_GameInstance.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
+#include "VRGun/Prop/BGMManager.h"
 AVRLobbyGameMode::AVRLobbyGameMode()
 {
     // 【核心机制】：强制使用有缝跳转 (Non-Seamless Travel)。
@@ -151,6 +152,12 @@ void AVRLobbyGameMode::BeginPlay()
         // 如果关闭了导播，确保重置电脑屏幕的输出模式为头显画面！
         UE_LOG(LogTemp, Warning, TEXT("[GameMode] 导播模式已禁用，电脑大屏将显示默认头显画面。"));
         UHeadMountedDisplayFunctionLibrary::SetSpectatorScreenMode(ESpectatorScreenMode::SingleEyeCroppedToFill);
+    }
+
+
+    if (HasAuthority()&& BGMManager)
+    {
+        CachedBGMManager = GetWorld()->SpawnActor<ABGMManager>(BGMManager);
     }
 }
 
@@ -293,4 +300,8 @@ void AVRLobbyGameMode::LightUpAllPlayers()
             VRPC->Client_HideLoadingScreen();
     }
     if (CachedDirector) CachedDirector->ReverseFadeTimeline(0.5f);
+    if (CachedBGMManager)
+    {
+        CachedBGMManager->SwitchBGM(TEXT("Lobby"));
+    }
 }

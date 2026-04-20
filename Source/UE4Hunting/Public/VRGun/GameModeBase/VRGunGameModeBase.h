@@ -188,4 +188,12 @@ protected:
     FTimerHandle TimerHandle_WaitForPlayers;
     bool bHasStartedMatch = false;
     void OnWaitPlayersTimeout();
+
+#pragma region /* BGM */
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VR|BGM")
+    TSubclassOf<class ABGMManager>BGMManager;
+    UPROPERTY(BlueprintReadOnly, Category = "VR|BGM")
+    class ABGMManager* CachedBGMManager = nullptr;
+#pragma endregion
 };

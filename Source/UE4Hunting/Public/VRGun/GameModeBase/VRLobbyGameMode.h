@@ -93,4 +93,10 @@ protected:
     void CheckAndStartLobby();
     void OnWaitPlayersTimeout();
     void LightUpAllPlayers();
+
+public:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VR|BGM")
+    TSubclassOf<class ABGMManager>BGMManager;
+    UPROPERTY(BlueprintReadOnly, Category = "VR|BGM")
+    class ABGMManager* CachedBGMManager = nullptr;
 };

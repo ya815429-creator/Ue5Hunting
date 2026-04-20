@@ -13,6 +13,7 @@
 #include "VRGun/Component/SequenceSyncComponent.h"
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "VRGun/Prop/BGMManager.h"
 #pragma region /* 构造与初始化 */
 
 AVRGunGameModeBase::AVRGunGameModeBase()
@@ -68,6 +69,11 @@ void AVRGunGameModeBase::BeginPlay()
 
     bHasStartedMatch = false;
     GetWorld()->GetTimerManager().SetTimer(TimerHandle_WaitForPlayers, this, &AVRGunGameModeBase::OnWaitPlayersTimeout, MaxWaitTimeForPlayers, false);
+
+    if (HasAuthority() && BGMManager)
+    {
+        CachedBGMManager = GetWorld()->SpawnActor<ABGMManager>(BGMManager);
+    }
 }
 
 void AVRGunGameModeBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
