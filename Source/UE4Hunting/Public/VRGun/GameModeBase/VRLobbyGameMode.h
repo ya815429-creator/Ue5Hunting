@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "CMyGameModeBase.h"
 #include "VRLobbyGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class UE4HUNTING_API AVRLobbyGameMode : public AGameModeBase
+class UE4HUNTING_API AVRLobbyGameMode : public ACMyGameModeBase
 {
 	GENERATED_BODY()
 	

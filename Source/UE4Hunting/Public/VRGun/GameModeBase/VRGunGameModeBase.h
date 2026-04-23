@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "CMyGameModeBase.h"
 #include "VRGunGameModeBase.generated.h"
 
 class AQteBase_New;
@@ -14,7 +14,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGlobalQteClearedDelegate);
  * 仅在服务器端运行。负责统筹玩家登录、起始联机倒计时控制、全图定序器分配，以及全局 QTE 实体管理。
  */
 UCLASS()
-class UE4HUNTING_API AVRGunGameModeBase : public AGameModeBase
+class UE4HUNTING_API AVRGunGameModeBase : public ACMyGameModeBase
 {
     GENERATED_BODY()
 
