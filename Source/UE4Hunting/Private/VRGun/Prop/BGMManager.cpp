@@ -6,6 +6,9 @@
 #include "Components/AudioComponent.h"
 #include "Sound/SoundBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "VRGun/GameInstance/VR_GameInstance.h"
+#include "VRGun/VRCharacter_Gun.h"
+#include "VRGun/GameStateBase/VRGunGameStateBase.h"
 // Sets default values
 ABGMManager::ABGMManager()
 {
@@ -70,14 +73,31 @@ void ABGMManager::OnRep_CurrentBGMTag()
         return;
     }
 
-    // 查字典：去歌单里找这首歌
-    if (!BGMPlaylist.Contains(CurrentBGMTag))
+    // 1. 获取本地玩家的投币状态
+    AVRGunGameStateBase* GS = GetWorld()->GetGameState<AVRGunGameStateBase>();
+    AVRCharacter_Gun* LocalChar = Cast<AVRCharacter_Gun>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+
+    FName FinalTag = CurrentBGMTag;
+
+    if (GS && LocalChar)
     {
-        UE_LOG(LogTemp, Warning, TEXT("[BGM] 找不到名为 %s 的音乐！请检查蓝图歌单配置。"), *CurrentBGMTag.ToString());
+        bool bPaid = (LocalChar->AssignedPlayerIndex == 0) ? GS->Rep_P0_IsPaid : GS->Rep_P1_IsPaid;
+
+        // 2. 如果是游戏内地图 BGM，且玩家没投币，则强行切换到“等待室”标签
+        if (!bPaid && CurrentBGMTag != TEXT("Lobby"))
+        {
+            FinalTag = TEXT("WaitingRoomBGM"); // 这里需要在歌单 TMap 里配置这个标签
+        }
+    }
+
+    // 查字典：去歌单里找这首歌
+    if (!BGMPlaylist.Contains(FinalTag))
+    {
+        UE_LOG(LogTemp, Warning, TEXT("[BGM] 找不到名为 %s 的音乐！请检查蓝图歌单配置。"), *FinalTag.ToString());
         return;
     }
 
-    USoundBase* NewBGM = BGMPlaylist[CurrentBGMTag];
+    USoundBase* NewBGM = BGMPlaylist[FinalTag];
     if (!NewBGM) return;
 
     // 核心交叉淡化逻辑

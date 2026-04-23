@@ -108,7 +108,6 @@ void AVRCharacter_Gun::BeginPlay()
         }
         else
         {
-            // 兜底方案
             InitialMeshRotation = GetMesh()->GetRelativeRotation();
         }
     }

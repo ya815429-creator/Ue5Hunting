@@ -33,11 +33,11 @@ public:
 #pragma region /* VR 无缝加载与流送握手 */
 public:
 
-    /** 客户端 RPC：命令客户端黑屏*/
+    /** 客户端 RPC：命令客户端黑屏(显示加载界面)*/
     UFUNCTION(Client, Reliable, BlueprintCallable, Category = "VR|Loading")
     void Client_ShowLoadingScreen(float Duration);
 
-    /** 客户端 RPC：命令客户端正式亮起画面 */
+    /** 客户端 RPC：命令客户端正式亮起画面(隐藏加载界面) */
     UFUNCTION(Client, Reliable, BlueprintCallable, Category = "VR|Loading")
     void Client_HideLoadingScreen();
 

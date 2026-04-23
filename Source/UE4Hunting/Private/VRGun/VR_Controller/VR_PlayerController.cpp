@@ -58,7 +58,7 @@ void AVR_PlayerController::Client_HideLoadingScreen_Implementation()
 
     if (PlayerCameraManager)
     {
-        PlayerCameraManager->StartCameraFade(1.0f, 0.0f, 0.5f, FLinearColor::Black, false, true);
+        PlayerCameraManager->StartCameraFade(1.0f, 0.0f, 0.5f, FLinearColor::Black, true, true);
     }
     // 解开武器保险
     if (APawn* MyPawn = GetPawn())

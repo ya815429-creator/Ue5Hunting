@@ -140,7 +140,7 @@ void AVRGunGameModeBase::PostLogin(APlayerController* NewPlayer)
         ActualVRPlayerCount++;
 
         // ==========================================
-        // 🌟 核心：判断投币状态，决定出生标签
+        // 核心：判断投币状态，决定出生标签
         // ==========================================
         UVR_GameInstance* GI = Cast<UVR_GameInstance>(GetGameInstance());
         bool bHasPaid = true; // 默认 true (如果没有接入 GameInstance)
@@ -168,7 +168,7 @@ void AVRGunGameModeBase::PostLogin(APlayerController* NewPlayer)
         }
 
         // ==========================================
-        // 🌟 寻找专属出生点 (所有人都会在这里被传送到对应的位置)
+        // 寻找专属出生点 (所有人都会在这里被传送到对应的位置)
         // ==========================================
         bool bFoundStart = false;
         for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
@@ -183,14 +183,25 @@ void AVRGunGameModeBase::PostLogin(APlayerController* NewPlayer)
             }
         }
     }
-    if (UVRWeaponComponent* WeaponComp = PCCharacter->FindComponentByClass<UVRWeaponComponent>())
+    if (PCCharacter->FindComponentByClass<UVRWeaponComponent>())
     {
-        WeaponComp->EquipInitialWeapon();
+        UVRWeaponComponent* WeaponComp = PCCharacter->FindComponentByClass<UVRWeaponComponent>();
+        if (WeaponComp)
+        {
+            //装备武器
+            WeaponComp->EquipInitialWeapon();
+        }
+       
     }
-    // 🌟 所有人（包括等候室的玩家）都会正常黑屏
+    //所有人（包括等候室的玩家）都会正常黑屏
     if (AVR_PlayerController* VRPC = Cast<AVR_PlayerController>(NewPlayer))
     {
-        if (!bHasStartedMatch) VRPC->Client_ShowLoadingScreen(0.1f);
+        UE_LOG(LogTemp, Warning, TEXT("bHasStartedMatch = %d"), bHasStartedMatch);
+        if (!bHasStartedMatch)
+        {
+            VRPC->Client_ShowLoadingScreen(0.1f);
+            UE_LOG(LogTemp, Warning, TEXT("正常黑屏"));
+        }
     }
 }
 

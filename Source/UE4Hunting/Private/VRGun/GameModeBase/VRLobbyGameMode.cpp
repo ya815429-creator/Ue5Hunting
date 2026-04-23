@@ -272,7 +272,8 @@ void AVRLobbyGameMode::CheckAndStartLobby()
 
     UVR_GameInstance* GI = Cast<UVR_GameInstance>(GetGameInstance());
     int32 Expected = (GI && GI->ExpectedPlayerCount > 0) ? GI->ExpectedPlayerCount : 1;
-
+    UE_LOG(LogTemp, Warning, TEXT("预期值 Expected = %d"), Expected);
+    UE_LOG(LogTemp, Warning, TEXT("当前总玩家数：%d，已加载关卡的玩家数：%d"), GetNumPlayers(), PlayersLoadedLevel);
     // 🌟 双重屏障：连接人齐了 && 加载图读完了
     if (GetNumPlayers() >= Expected && PlayersLoadedLevel >= Expected)
     {

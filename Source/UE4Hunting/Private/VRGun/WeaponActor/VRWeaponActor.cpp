@@ -11,6 +11,7 @@
 #include "EngineUtils.h"
 #include "VRGun/VRCharacter_Gun.h"
 #include "ProSceneCaptureComponent2D.h"
+#include "VRGun/GameStateBase/VRGunGameStateBase.h"
 #pragma region /* 构造与初始化 */
 
 /**
@@ -155,6 +156,24 @@ void AVRWeaponActor::HandleEquipProgress(float Value)
 void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const TArray<FVector>& TargetNormals, const TArray<EVRHitType>& HitTypes, bool bIsLocalFire, EVRWeaponType WeaponType)
 {
 
+    AVRGunGameStateBase* GS = GetWorld()->GetGameState<AVRGunGameStateBase>();
+    AVRCharacter_Gun* WeaponOwner = Cast<AVRCharacter_Gun>(GetOwner()); // 武器的主人
+    AVRCharacter_Gun* LocalChar = Cast<AVRCharacter_Gun>(UGameplayStatics::GetPlayerPawn(GetWorld(), 0)); // 屏幕前的人
+
+    if (GS && WeaponOwner && LocalChar)
+    {
+        bool bOwnerPaid = (WeaponOwner->AssignedPlayerIndex == 0) ? GS->Rep_P0_IsPaid : GS->Rep_P1_IsPaid;
+        bool bLocalPaid = (LocalChar->AssignedPlayerIndex == 0) ? GS->Rep_P0_IsPaid : GS->Rep_P1_IsPaid;
+
+       /* UE_LOG(LogTemp,Error,TEXT("bOwnerPaid:%d,bLocalPaid:%d,bIsLocalFire:%d"), bOwnerPaid, bLocalPaid, bIsLocalFire);*/
+        // 核心过滤：支付状态不匹配且不是本地开火，跳过声音
+        if (!bIsLocalFire && (bOwnerPaid != bLocalPaid))
+        {
+           /* UE_LOG(LogTemp, Error, TEXT("goto skipsound"));*/
+            goto SkipSound;
+        }
+    }
+
     // ==========================================
     // 播放开火音效 (双轨防吵闹处理)
     // ==========================================
@@ -179,6 +198,7 @@ void AVRWeaponActor::FireVisuals(const TArray<FVector>& TargetLocations, const T
         }
     }
 
+SkipSound:
     // ==========================================
      //激活枪口动态光源 (同步双端)
      // ==========================================

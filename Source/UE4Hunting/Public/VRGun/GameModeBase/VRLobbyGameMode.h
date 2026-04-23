@@ -23,6 +23,7 @@ public:
      * @param LevelName 玩家选择的关卡名
      * @param Voter 开枪的玩家控制器 (用于去重或记录)
      */
+    UFUNCTION(BlueprintCallable)
     void SubmitVote(FName LevelName, class AController* Voter);
 
     /*当玩家投币时*/
